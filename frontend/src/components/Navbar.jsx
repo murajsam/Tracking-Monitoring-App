@@ -4,12 +4,12 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="flex items-center justify-between py-4 px-6 shadow-lg bg-white mb-20">
+    <nav className="sticky top-0 z-50 flex items-center justify-between py-4 px-6 shadow-lg bg-white mb-20">
       <div className="flex items-center space-x-4">
         <a href="/" className="flex items-center">
           <img
-            src="https://cdn.prod.website-files.com/6580bbf475e11b18cfbe3d2d/6580bbf475e11b18cfbe3dad_MicrosoftTeams-image%2520(270)-p-500.png"
-            alt="CargoFlow Logo"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzcu7iYfNs3hZT6fli_rJNGeoJSh0EzcMMrw&s"
+            alt="Avnet Logo"
             className="h-8 w-auto"
           />
         </a>
