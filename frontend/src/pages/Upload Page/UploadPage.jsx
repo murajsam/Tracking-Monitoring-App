@@ -6,10 +6,10 @@ const UploadPage = () => {
   return (
     <>
       <Navbar />
-      <h1 className="text-5xl font-bold text-gray-700 text-center mb-10">
-        Upload Your Tracking Data
-      </h1>
-      <div className="">
+      <div className="flex flex-col justify-center items-center">
+        <h1 className="text-5xl font-bold text-gray-700 text-center mb-10">
+          Upload Your Tracking Data
+        </h1>
         <UploadFile />
       </div>
     </>
