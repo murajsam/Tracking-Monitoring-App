@@ -109,7 +109,7 @@ const carrierMappings = {
 export const parseExcelFile = (buffer) => {
   const workbook = XLSX.read(buffer, { type: "buffer" });
   let finalMappedData = [];
-  let finalCarrier = null;
+  let finalCarrier = "Unknown";
 
   workbook.SheetNames.forEach((sheetName) => {
     const worksheet = workbook.Sheets[sheetName];

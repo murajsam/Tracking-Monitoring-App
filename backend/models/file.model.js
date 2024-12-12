@@ -7,19 +7,27 @@ const fileSchema = new mongoose.Schema({
   },
   carrier: {
     type: String,
-    enum: ["Logwin", "DHL", "Hellman", null],
-    default: null,
+    enum: ["Logwin", "DHL", "Hellman", "Unknown"],
+    default: "Unknown",
   },
   status: {
     type: String,
     enum: ["N/A", "Validated", "Failed"],
     default: "N/A",
   },
-  importedRows: {
+  failureReason: {
+    type: String,
+    default: "",
+  },
+  totalRows: {
     type: Number,
     default: 0,
   },
-  totalRows: {
+  duplicatedRows: {
+    type: Number,
+    default: 0,
+  },
+  importedRows: {
     type: Number,
     default: 0,
   },
