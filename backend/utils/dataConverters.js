@@ -1,3 +1,9 @@
+export const isPotentialDate = (value) => {
+  const dateRegex =
+    /^\d{1,2}[\/\.]\d{1,2}[\/\.]\d{2,4}\s+\d{1,2}(:\d{2}(:\d{2})?)?$/;
+  return typeof value === "string" && dateRegex.test(value);
+};
+
 export const convertWeight = (value) => {
   if (value === null || value === undefined) return null;
 
@@ -26,44 +32,4 @@ export const convertWeight = (value) => {
     default:
       return null;
   }
-};
-
-export const validateDate = (value) => {
-  if (value === null || value === undefined) return null;
-  if (value instanceof Date) return value;
-
-  if (typeof value === "number") {
-    const millisecondsInDay = 86400 * 1000;
-    const excelEpoch = new Date(1899, 11, 30);
-    const jsDate = new Date(excelEpoch.getTime() + value * millisecondsInDay);
-    jsDate.setHours(jsDate.getHours() + 2);
-    return jsDate;
-  }
-
-  if (typeof value === "string") {
-    const dateFormats = [
-      /^\d{1,2}[/.-]\d{1,2}[/.-]\d{4}$/,
-      /^\d{4}[/.-]\d{1,2}[/.-]\d{1,2}$/,
-    ];
-
-    const validDateFormats = dateFormats.some((format) => format.test(value));
-    if (!validDateFormats) return null;
-
-    const parsedDate = new Date(value);
-    if (isNaN(parsedDate.getTime())) return null;
-
-    const year = parsedDate.getFullYear();
-    const month = parsedDate.getMonth();
-    const day = parsedDate.getDate();
-
-    if (year < 1900 || year > 2100) return null;
-    if (month < 0 || month > 11) return null;
-
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    if (day < 1 || day > daysInMonth) return null;
-
-    return parsedDate;
-  }
-
-  return null;
 };
