@@ -161,8 +161,34 @@ export const processExcelFile = (buffer) => {
 
           retrievedTrackingDataObject[field] = isPotentialDate(value)
             ? (() => {
-                const date = new Date(value);
-                return isNaN(date.getTime()) ? null : date; // Proveri validnost datuma
+                switch (matchingCarrier.name) {
+                  case "Logwin": {
+                    const date = new Date(value);
+                    const offset = +120; // GMT+0200 (Central European Summer Time)
+                    const adjustedDate = new Date(
+                      date.getTime() + offset * 60 * 1000
+                    );
+                    return isNaN(adjustedDate.getTime()) ? null : adjustedDate;
+                  }
+                  case "DHL": {
+                    const date = new Date(value);
+                    const offset = +60; // GMT+0100 (Central European Standard Time)
+                    const adjustedDate = new Date(
+                      date.getTime() + offset * 60 * 1000
+                    );
+                    return isNaN(adjustedDate.getTime()) ? null : adjustedDate;
+                  }
+                  case "Hellman": {
+                    const date = new Date(value);
+                    const offset = +120; // GMT+0200 (Central European Standard Time)
+                    const adjustedDate = new Date(
+                      date.getTime() + offset * 60 * 1000
+                    );
+                    return isNaN(adjustedDate.getTime()) ? null : adjustedDate;
+                  }
+                  default:
+                    return null; // Ako nije nijedan od definisanih slucajeva
+                }
               })()
             : value === ""
             ? null // Prazne vrednosti postavi na null
@@ -170,7 +196,16 @@ export const processExcelFile = (buffer) => {
         });
 
         // Add the mapped data to the array
-        retrievedTrackingData.push(retrievedTrackingDataObject);
+        if (
+          Object.values(retrievedTrackingDataObject).some(
+            (value) =>
+              value !== null &&
+              value !== "" &&
+              (typeof value !== "string" || value.trim() !== "")
+          )
+        ) {
+          retrievedTrackingData.push(retrievedTrackingDataObject);
+        }
       }
 
       // Maps and fills predefined fields based on the carrier
@@ -198,7 +233,7 @@ export const processExcelFile = (buffer) => {
               ATA: null,
               Carrier: null,
               Packages: packages,
-              Weight: convertWeight(weight),
+              Weight: convertWeight(weight) <= 0 ? null : convertWeight(weight),
               Volume: null,
               "Shipper Country": null,
               Receiver: receiver,
@@ -241,7 +276,7 @@ export const processExcelFile = (buffer) => {
               ATA: ata,
               Carrier: matchingCarrier.name,
               Packages: packages,
-              Weight: convertWeight(weight),
+              Weight: convertWeight(weight) <= 0 ? null : convertWeight(weight),
               Volume: null,
               "Shipper Country": shipperCountry,
               Receiver: null,
@@ -286,7 +321,7 @@ export const processExcelFile = (buffer) => {
               ATA: ata,
               Carrier: carrier,
               Packages: packages,
-              Weight: convertWeight(weight),
+              Weight: convertWeight(weight) <= 0 ? null : convertWeight(weight),
               Volume: volume,
               "Shipper Country": null,
               Receiver: null,
@@ -309,6 +344,5 @@ export const processExcelFile = (buffer) => {
     }
   }
 
-  // If no matching carrier is found in any sheet
   return { trackingData: [], carrier: "Unknown" };
 };

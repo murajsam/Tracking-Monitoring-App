@@ -1,18 +1,37 @@
 import mongoose from "mongoose";
 
+// Custom getter/setter za datume koji handleuje nevalidne vrednosti
+const dateHandler = {
+  get: (value) => value,
+  set: (value) => {
+    if (!value) return null;
+    const date = new Date(value);
+    return isNaN(date.getTime()) ? null : date;
+  },
+};
+
 const trackingSchema = new mongoose.Schema(
   {
     data: {
       type: {
         Status: { type: String },
         "PO Number": { type: String },
-        ETD: { type: Date },
-        ETA: { type: Date },
-        ATD: { type: Date },
-        ATA: { type: Date },
-        Packages: { type: Number },
-        Weight: { type: Number },
-        Volume: { type: Number },
+        ETD: { type: Date, set: dateHandler.set },
+        ETA: { type: Date, set: dateHandler.set },
+        ATD: { type: Date, set: dateHandler.set },
+        ATA: { type: Date, set: dateHandler.set },
+        Packages: {
+          type: Number,
+          set: (v) => (isNaN(Number(v)) || v <= 0 ? null : Number(v)),
+        },
+        Weight: {
+          type: Number,
+          set: (v) => (isNaN(Number(v)) || v <= 0 ? null : Number(v)),
+        },
+        Volume: {
+          type: Number,
+          set: (v) => (isNaN(Number(v)) || v <= 0 ? null : Number(v)),
+        },
         Shipper: { type: String },
         "Shipper Country": { type: String },
         Receiver: { type: String },
@@ -22,8 +41,8 @@ const trackingSchema = new mongoose.Schema(
         Carrier: { type: String },
         "Inco Term": { type: String },
         "Flight No": { type: String },
-        "Pick-up Date": { type: Date },
-        "Latest Checkpoint": { type: Date },
+        "Pick-up Date": { type: Date, set: dateHandler.set },
+        "Latest Checkpoint": { type: Date, set: dateHandler.set },
         "Additional Info": { type: mongoose.Schema.Types.Mixed },
       },
     },

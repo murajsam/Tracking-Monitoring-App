@@ -44,12 +44,47 @@ export const uploadFile = async (req, res) => {
     let importedRows = 0;
     let duplicatedRows = 0;
 
+    const fieldsToCheck = [
+      "Status",
+      "PO Number",
+      "ETD",
+      "ETA",
+      "ATD",
+      "ATA",
+      "Packages",
+      "Weight",
+      "Volume",
+      "Shipper",
+      "Shipper Country",
+      "Receiver",
+      "Receiver Country",
+      "House AWB",
+      "Shipper Ref. No",
+      "Carrier",
+      "Inco Term",
+      "Flight No",
+      "Pick-up Date",
+      "Latest Checkpoint",
+    ];
+
     // Obrada redova
     for (const row of trackingData) {
       try {
-        const existingData = await Tracking.findOne({
-          "data.House AWB": row["House AWB"],
+        const query = {};
+        fieldsToCheck.forEach((field) => {
+          if (
+            row[field] !== undefined &&
+            row[field] !== 0 &&
+            row[field] !== null &&
+            row[field] !== "" &&
+            (typeof row[field] !== "string" || row[field].trim() !== "")
+          ) {
+            query[`data.${field}`] = row[field];
+          }
         });
+
+        // Proveri da li postoji dokument sa istim vrednostima u navedenim poljima
+        const existingData = await Tracking.findOne(query);
 
         if (!existingData) {
           const trackingRecord = new Tracking({
@@ -62,7 +97,6 @@ export const uploadFile = async (req, res) => {
           duplicatedRows++;
         }
       } catch (error) {
-        duplicatedRows++;
         console.error(`Failed to process row: ${row}`, error.message);
       }
     }

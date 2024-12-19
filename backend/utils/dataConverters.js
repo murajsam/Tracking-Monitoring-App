@@ -1,7 +1,10 @@
 export const isPotentialDate = (value) => {
   const dateRegex =
-    /^\d{1,2}[\/\.]\d{1,2}[\/\.]\d{2,4}\s+\d{1,2}(:\d{2}(:\d{2})?)?$/;
-  return typeof value === "string" && dateRegex.test(value);
+    /^\d{1,2}[\/\.]\d{1,2}[\/\.]\d{2,4}(\s+\d{1,2}:\d{2}(:\d{2})?\s*(AM|PM)?)?$/i;
+  return (
+    (typeof value === "string" && dateRegex.test(value)) ||
+    value instanceof Date
+  );
 };
 
 export const convertWeight = (value) => {
