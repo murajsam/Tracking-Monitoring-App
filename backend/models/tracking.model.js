@@ -50,6 +50,9 @@ const trackingSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "File",
     },
+    fileName: {
+      type: String,
+    },
     dateAdded: {
       type: Date,
       default: Date.now,

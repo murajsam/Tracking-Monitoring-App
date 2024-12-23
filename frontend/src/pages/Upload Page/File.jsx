@@ -79,11 +79,19 @@ const File = ({
                 <CircularProgressbar
                   value={successRate}
                   text={`${successRate}%`}
-                  styles={buildStyles({
-                    pathColor: "#22c55e",
-                    textColor: "#374151",
-                    trailColor: "#ef4444",
-                  })}
+                  styles={
+                    totalRows === 0
+                      ? buildStyles({
+                          pathColor: "#4b5563",
+                          textColor: "#4b5563",
+                          trailColor: "#4b5563",
+                        })
+                      : buildStyles({
+                          pathColor: "#22c55e",
+                          textColor: "#374151",
+                          trailColor: "#ef4444",
+                        })
+                  }
                 />
               </div>
             </div>
@@ -104,7 +112,7 @@ const File = ({
                 {/* Imported Rows */}
                 <div>
                   <p className="text-sm text-gray-600">Imported Rows</p>
-                  <div className="bg-gray-300 rounded-full h-3 w-full mt-1">
+                  <div className="bg-gray-600 rounded-full h-3 w-full mt-1">
                     <div
                       className="bg-green-500 h-3 rounded-full"
                       style={{
@@ -123,7 +131,7 @@ const File = ({
                 {/* Duplicated Rows */}
                 <div>
                   <p className="text-sm text-gray-600">Duplicated Rows</p>
-                  <div className="bg-gray-300 rounded-full h-3 w-full mt-1">
+                  <div className="bg-gray-600 rounded-full h-3 w-full mt-1">
                     <div
                       className="bg-red-500 h-3 rounded-full"
                       style={{

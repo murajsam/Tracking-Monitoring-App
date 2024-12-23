@@ -89,7 +89,8 @@ export const uploadFile = async (req, res) => {
         if (!existingData) {
           const trackingRecord = new Tracking({
             data: row,
-            fileId: fileRecord._id, // Povezivanje sa fajlom
+            fileId: fileRecord._id,
+            fileName: fileRecord.fileName,
           });
           await trackingRecord.save();
           importedRows++;

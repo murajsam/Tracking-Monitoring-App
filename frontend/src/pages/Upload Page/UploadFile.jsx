@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import File from "./File";
 import axios from "axios";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const UploadFile = () => {
   const [step, setStep] = useState(1);
@@ -8,6 +9,9 @@ const UploadFile = () => {
   const [validationResults, setValidationResults] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [currentFileIndex, setCurrentFileIndex] = useState(0);
 
   // File selection and validation helpers
   const validateFiles = (selectedFiles) => {
@@ -62,10 +66,15 @@ const UploadFile = () => {
   };
 
   const handleValidation = async () => {
+    setIsLoading(true);
+    setProgress(0);
+    setCurrentFileIndex(0);
     try {
       const responses = [];
+      let i = 0;
 
       for (const file of files) {
+        setCurrentFileIndex(i);
         const formData = new FormData();
         formData.append("file", file.file);
 
@@ -97,6 +106,9 @@ const UploadFile = () => {
             status: "Failed",
             error: error.response?.data?.message || "Unknown error",
           });
+        } finally {
+          i++;
+          setProgress(Math.round((i / files.length) * 100));
         }
       }
 
@@ -107,6 +119,8 @@ const UploadFile = () => {
       console.error("Validation failed:", error);
       setErrorMessage("Validation failed. Please try again.");
       setTimeout(() => setErrorMessage(""), 3000);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -178,12 +192,28 @@ const UploadFile = () => {
         </div>
       )}
       {files.length > 0 && (
-        <button
-          onClick={() => setStep(2)}
-          className="mt-6 bg-green-500 text-white font-bold py-3 px-16 rounded hover:bg-green-600 float-end"
-        >
-          Next
-        </button>
+        <>
+          <button
+            onClick={() => setStep(2)}
+            className="mt-6 bg-green-500 text-white font-bold py-3 px-16 rounded hover:bg-green-600 float-end"
+          >
+            Next
+          </button>
+          <button
+            onClick={() => document.getElementById("file-upload").click()}
+            className="mt-6 mr-5 bg-green-500 text-white font-bold py-3 px-16 rounded hover:bg-green-600 float-end"
+          >
+            Upload more?
+          </button>
+          <input
+            type="file"
+            multiple
+            accept=".xls,.xlsx"
+            onChange={handleFileChange}
+            className="hidden"
+            id="file-upload"
+          />
+        </>
       )}
     </div>
   );
@@ -193,7 +223,7 @@ const UploadFile = () => {
       <div className="bg-white border-2 rounded-3xl p-6 max-w-7xl w-full shadow-lg">
         <h2 className="text-3xl font-bold text-gray-700 text-center mb-6">
           <span className="text-green-500">
-            {step <= 2 ? `Step ${step} - ` : `Data imported successfully!!`}
+            {step <= 2 ? `Step ${step} - ` : `Finished`}
           </span>
           {["Upload Files", "Validate Files & Import Data"][step - 1]}
         </h2>
@@ -233,25 +263,35 @@ const UploadFile = () => {
         {step === 1 && renderFileUploadStep()}
 
         {step === 2 && (
-          <div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-h-96">
-              {files.map((file, index) => (
-                <File
-                  key={index}
-                  name={file.name}
-                  status={file.status}
-                  showRemove={false}
-                  step={step}
-                />
-              ))}
-            </div>
-            <button
-              onClick={handleValidation}
-              className="mt-6 bg-green-500 text-white font-bold py-3 px-16 rounded hover:bg-green-600 float-end"
-            >
-              Import data
-            </button>
-          </div>
+          <>
+            {isLoading ? (
+              <LoadingSpinner
+                progress={progress}
+                currentFile={currentFileIndex + 1}
+                totalFiles={files.length}
+              />
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-h-96">
+                  {files.map((file, index) => (
+                    <File
+                      key={index}
+                      name={file.name}
+                      status={file.status}
+                      showRemove={false}
+                      step={step}
+                    />
+                  ))}
+                </div>
+                <button
+                  onClick={handleValidation}
+                  className="mt-6 bg-green-500 text-white font-bold py-3 px-16 rounded hover:bg-green-600 float-end"
+                >
+                  Import data
+                </button>
+              </>
+            )}
+          </>
         )}
 
         {step === 3 && (
@@ -283,7 +323,7 @@ const UploadFile = () => {
             </button>
 
             <a
-              href="/Overview Page"
+              href="/overview"
               className="mt-6 bg-green-500 text-white font-bold py-3 px-16 rounded hover:bg-green-600 float-end"
             >
               Overview →

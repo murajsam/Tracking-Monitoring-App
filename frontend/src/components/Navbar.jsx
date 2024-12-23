@@ -4,7 +4,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 flex items-center justify-between py-4 px-6 shadow-lg bg-white mb-20">
+    <nav className="sticky top-0 z-50 flex items-center justify-between py-4 px-6 shadow-lg bg-white mb-10">
       <div className="flex items-center space-x-4">
         <a href="/" className="flex items-center">
           <img
@@ -63,7 +63,7 @@ const Navbar = () => {
           Upload
         </a>
         <a
-          href="/Overview Page"
+          href="/overview"
           className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg shadow-md block md:inline-block"
         >
           Overview →
