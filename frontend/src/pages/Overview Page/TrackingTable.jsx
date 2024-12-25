@@ -11,11 +11,8 @@ import {
   Eye,
 } from "lucide-react";
 import { formatDateTime } from "../../utils/formatDateTimeUtils";
-import { useNavigate } from "react-router-dom";
 
 const TrackingTable = ({ trackings }) => {
-  const navigate = useNavigate();
-
   const getCarrierIcon = (carrier) => {
     switch (carrier?.toLowerCase()) {
       case "hellman":
@@ -175,15 +172,15 @@ const TrackingTable = ({ trackings }) => {
                     : "Not Specified"}
                 </td>
                 <td className="px-6 py-4">
-                  <button
-                    onClick={() => {
-                      navigate(`/details/${tracking._id}`);
-                    }}
+                  <a
+                    href={`/details/${tracking._id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium text-green-600 hover:text-green-800 rounded-md hover:bg-green-50 transition-colors duration-150"
                   >
                     <Eye className="w-4 h-4" />
-                    View Details
-                  </button>
+                    <span className="hidden sm:inline">View Details</span>
+                  </a>
                 </td>
               </tr>
             ))}
@@ -202,15 +199,15 @@ const TrackingTable = ({ trackings }) => {
                 <div className="flex items-center gap-2">
                   {getCarrierIcon(tracking.data.Carrier)}
                 </div>
-                <button
-                  onClick={() => {
-                    navigate(`/details/${tracking._id}`);
-                  }}
+                <a
+                  href={`/details/${tracking._id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium text-green-600 hover:text-green-800 rounded-md hover:bg-green-50 transition-colors duration-150"
                 >
                   <Eye className="w-4 h-4" />
                   <span className="hidden sm:inline">View Details</span>
-                </button>
+                </a>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

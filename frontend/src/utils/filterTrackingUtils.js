@@ -1,110 +1,74 @@
 export const filterTrackings = (trackings, filters) => {
   return trackings.filter((tracking) => {
-    // Check carrier filter
+    // Carrier filter
     if (
       filters.carrier !== "All" &&
-      tracking.data.Carrier !== filters.carrier &&
-      tracking.data.Carrier !== null &&
-      tracking.data.Carrier !== "Not Specified"
+      tracking.data.Carrier !== filters.carrier
     ) {
       return false;
     }
 
-    // Check status filter
-    if (
-      filters.status !== "All" &&
-      tracking.data.Status !== filters.status &&
-      tracking.data.Status !== null &&
-      tracking.data.Status !== "Not Specified"
-    ) {
+    // Status filter
+    if (filters.status !== "All" && tracking.data.Status !== filters.status) {
       return false;
     }
 
-    // Check shipper filter
+    // Shipper filter
     if (
       filters.shipper !== "All" &&
-      tracking.data.Shipper !== filters.shipper &&
-      tracking.data.Shipper !== null &&
-      tracking.data.Shipper !== "Not Specified"
+      tracking.data.Shipper !== filters.shipper
     ) {
       return false;
     }
 
-    // Check weight filter
+    // Weight filter
     if (filters.weight !== "All") {
       const weight = parseFloat(tracking.data.Weight);
-
-      // If weight is null, "Not Specified", or not a valid number, exclude it
-      if (
-        !weight ||
-        isNaN(weight) ||
-        tracking.data.Weight === "Not Specified"
-      ) {
-        return false;
-      }
-
-      const [min, max] = getWeightRange(filters.weight);
-      if (weight < min || (max && weight > max)) {
+      const [min, max] = filters.weight.split(" - ").map(Number);
+      if (isNaN(weight) || weight < min || (max && weight > max)) {
         return false;
       }
     }
 
-    // Check date range
-    if (filters.dateRange === "Custom range") {
-      const trackingDate = new Date(tracking.data.ETD);
-      const { start, end } = filters.customDateRange || {};
-      if (start && trackingDate < new Date(start)) return false;
-      if (end && trackingDate > new Date(end)) return false;
-    } else if (filters.dateRange !== "All") {
-      const trackingDate = new Date(tracking.data.ETD);
-      const dateRange = getDateRange(filters.dateRange);
-      if (trackingDate < dateRange.start || trackingDate > dateRange.end) {
+    // Date range filter
+    if (filters.dateRange !== "All") {
+      const { start, end } = getDateRange(
+        filters.dateRange,
+        filters.customDateRange
+      );
+      const date = new Date(tracking.data.ETD);
+
+      if (date < start || date > end) {
         return false;
+      }
+    }
+
+    // Search logic
+    if (filters.search.term) {
+      const searchTerm = filters.search.term.toLowerCase();
+      if (filters.search.field === "All") {
+        return (
+          Object.values(tracking.data).some(
+            (value) =>
+              value &&
+              String(value).toLowerCase().includes(searchTerm) &&
+              value !== "Not Specified"
+          ) ||
+          (tracking.fileName &&
+            tracking.fileName.toLowerCase().includes(searchTerm) &&
+            tracking.fileName !== "Not Specified")
+        );
+      } else {
+        const fieldValue = tracking.data[filters.search.field];
+        return (
+          fieldValue &&
+          String(fieldValue).toLowerCase().includes(searchTerm) &&
+          fieldValue !== "Not Specified"
+        );
       }
     }
 
     return true;
-  });
-};
-
-export const searchTrackings = (trackings, searchTerm, searchField) => {
-  if (!searchTerm) return trackings;
-
-  const term = searchTerm.toLowerCase();
-  return trackings.filter((tracking) => {
-    switch (searchField) {
-      case "Carrier":
-        return (
-          tracking.data.Carrier &&
-          tracking.data.Carrier.toLowerCase().includes(term) &&
-          tracking.data.Carrier !== "Not Specified"
-        );
-      case "PO Number":
-        return (
-          tracking.data.AWB &&
-          tracking.data["PO Number"].toLowerCase().includes(term)
-        );
-      case "Shipper":
-        return (
-          tracking.data.Shipper &&
-          tracking.data.Shipper.toLowerCase().includes(term) &&
-          tracking.data.Shipper !== "Not Specified"
-        );
-      case "House AWB":
-        return (
-          tracking.data["House AWB"] &&
-          tracking.data["House AWB"].toLowerCase().includes(term) &&
-          tracking.data["House AWB"] !== "Not Specified"
-        );
-      case "All":
-      default:
-        return Object.values(tracking.data).some(
-          (value) =>
-            value &&
-            String(value).toLowerCase().includes(term) &&
-            value !== "Not Specified"
-        );
-    }
   });
 };
 
@@ -144,10 +108,15 @@ const getDateRange = (dateRangeFilter, customRange = {}) => {
       start.setDate(end.getDate() - 365);
       break;
     case "Custom range":
-      // Koristimo customRange za "Custom range"
-      if (customRange.start)
+      // Koristimo customRange samo ako su datumi postavljeni
+      if (customRange.start) {
         start.setTime(new Date(customRange.start).getTime());
-      if (customRange.end) end.setTime(new Date(customRange.end).getTime());
+      } else {
+        start.setFullYear(start.getFullYear() - 100); // Efektivno nema početnog datuma
+      }
+      if (customRange.end) {
+        end.setTime(new Date(customRange.end).getTime());
+      }
       break;
     default:
       start.setFullYear(start.getFullYear() - 100); // Efektivno nema početnog datuma

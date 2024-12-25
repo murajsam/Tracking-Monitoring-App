@@ -7,10 +7,7 @@ import ActiveFilters from "./ActiveFilters";
 import FilterPanel from "./FilterPanel";
 import TrackingTable from "./TrackingTable";
 import Pagination from "./Pagination";
-import {
-  filterTrackings,
-  searchTrackings,
-} from "../../utils/filterTrackingUtils";
+import { filterTrackings } from "../../utils/filterTrackingUtils";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import ErrorDisplay from "../../components/ErrorDisplay";
 
@@ -25,9 +22,8 @@ const OverviewPage = () => {
     weight: "All",
     dateRange: "All",
     customDateRange: { start: null, end: null },
+    search: { term: "", field: "All" },
   });
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchField, setSearchField] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -39,7 +35,7 @@ const OverviewPage = () => {
 
   useEffect(() => {
     applyFiltersAndSearch();
-  }, [trackings, selectedFilters, searchQuery, searchField]);
+  }, [trackings, selectedFilters]);
 
   const fetchTrackings = async () => {
     setIsLoading(true);
@@ -60,7 +56,6 @@ const OverviewPage = () => {
 
   const applyFiltersAndSearch = () => {
     let result = filterTrackings(trackings, selectedFilters);
-    result = searchTrackings(result, searchQuery, searchField);
     setFilteredTrackings(result);
     setCurrentPage(1);
   };
@@ -72,11 +67,12 @@ const OverviewPage = () => {
       if (key === "dateRange") {
         updatedFilters.dateRange = "All";
         updatedFilters.customDateRange = { start: null, end: null };
+      } else if (key === "search") {
+        updatedFilters.search = { term: "", field: "All" };
       } else {
         updatedFilters[key] = "All";
       }
 
-      console.log("Updated filters:", updatedFilters);
       return updatedFilters;
     });
   };
@@ -89,6 +85,7 @@ const OverviewPage = () => {
       weight: "All",
       dateRange: "All",
       customDateRange: { start: null, end: null },
+      search: { term: "", field: "All" },
     });
   };
 
@@ -109,13 +106,8 @@ const OverviewPage = () => {
             <SearchBar
               showFilters={showFilters}
               setShowFilters={setShowFilters}
-              setSearchQuery={setSearchQuery}
-              setSearchField={setSearchField}
-            />
-            <ActiveFilters
               selectedFilters={selectedFilters}
-              clearFilters={clearFilters}
-              removeFilter={removeFilter}
+              setSelectedFilters={setSelectedFilters}
             />
             {showFilters && (
               <FilterPanel
@@ -125,6 +117,11 @@ const OverviewPage = () => {
                 trackings={trackings}
               />
             )}
+            <ActiveFilters
+              selectedFilters={selectedFilters}
+              clearFilters={clearFilters}
+              removeFilter={removeFilter}
+            />
           </div>
         )}
       </div>

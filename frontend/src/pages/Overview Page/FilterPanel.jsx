@@ -41,9 +41,9 @@ const FilterPanel = ({
     });
 
     return {
-      carrier: ["All", ...Array.from(carriers)],
-      status: ["All", ...Array.from(statuses)],
-      shipper: ["All", ...Array.from(shippers)],
+      carrier: ["All", ...Array.from(carriers).sort()],
+      status: ["All", ...Array.from(statuses).sort()],
+      shipper: ["All", ...Array.from(shippers).sort()],
       weight: ["All", "0 - 10 kg", "10 - 50 kg", "50 - 100 kg", "100+ kg"],
       dateRange: [
         "All",

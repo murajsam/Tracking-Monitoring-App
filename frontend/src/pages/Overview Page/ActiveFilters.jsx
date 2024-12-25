@@ -7,7 +7,25 @@ const ActiveFilters = ({ selectedFilters, clearFilters, removeFilter }) => {
       {Object.entries(selectedFilters)
         .filter(([key, value]) => {
           if (key === "customDateRange") {
-            return selectedFilters.dateRange === "Custom range"; // Prikazujemo samo ako je izabran "Custom range"
+            // Prikazujemo samo ako je izabran "Custom range" i barem jedan datum nije prazan
+            return (
+              selectedFilters.dateRange === "Custom range" &&
+              (value.start || value.end)
+            );
+          }
+          if (key === "search") {
+            return value.term !== ""; // Prikazujemo ako postoji pretraženi termin
+          }
+          if (key === "dateRange") {
+            // Ne prikazujemo "dateRange" ako je "Custom range" i oba datuma prazna
+            return (
+              value !== "All" &&
+              !(
+                value === "Custom range" &&
+                !selectedFilters.customDateRange.start &&
+                !selectedFilters.customDateRange.end
+              )
+            );
           }
           return value !== "All"; // Prikazujemo sve ostale aktivne filtere
         })
@@ -23,6 +41,20 @@ const ActiveFilters = ({ selectedFilters, clearFilters, removeFilter }) => {
                 <X
                   className="h-4 w-4 cursor-pointer"
                   onClick={() => removeFilter("dateRange")}
+                />
+              </span>
+            );
+          }
+          if (key === "search") {
+            return (
+              <span
+                key={key}
+                className="inline-flex items-center gap-1 py-1 bg-green-50 text-green-700 rounded-full text-sm"
+              >
+                Search: {value.term} ({value.field})
+                <X
+                  className="h-4 w-4 cursor-pointer"
+                  onClick={() => removeFilter("search")}
                 />
               </span>
             );
@@ -50,6 +82,20 @@ const ActiveFilters = ({ selectedFilters, clearFilters, removeFilter }) => {
         if (key === "customDateRange") {
           // Proveri ako su oba datuma prazna
           return value?.start || value?.end;
+        }
+        if (key === "search") {
+          return value.term !== ""; // Proveri ako postoji pretraženi termin
+        }
+        if (key === "dateRange") {
+          // Ne prikazujemo "dateRange" ako je "Custom range" i oba datuma prazna
+          return (
+            value !== "All" &&
+            !(
+              value === "Custom range" &&
+              !selectedFilters.customDateRange.start &&
+              !selectedFilters.customDateRange.end
+            )
+          );
         }
         return value !== "All"; // Standardna provera za ostale filtere
       }) && (
