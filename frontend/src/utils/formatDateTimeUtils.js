@@ -2,6 +2,11 @@ export const formatDateTime = (isoDate) => {
   // Parsiraj ISO datum
   const dateObj = new Date(isoDate);
 
+  // Proveri da li je datum podrazumevani "1st January, 1970 00:00"
+  if (dateObj.getTime() === 0) {
+    return null;
+  }
+
   // Proveri da li je vreme "00:00:00.000Z"
   const hours = dateObj.getUTCHours();
   const minutes = dateObj.getUTCMinutes();

@@ -24,7 +24,7 @@ export const filterTrackings = (trackings, filters) => {
     // Weight filter
     if (filters.weight !== "All") {
       const weight = parseFloat(tracking.data.Weight);
-      const [min, max] = filters.weight.split(" - ").map(Number);
+      const [min, max] = getWeightRange(filters.weight);
       if (isNaN(weight) || weight < min || (max && weight > max)) {
         return false;
       }
