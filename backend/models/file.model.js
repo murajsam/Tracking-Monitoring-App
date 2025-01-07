@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// model for uploaded files for tracking data
 const fileSchema = new mongoose.Schema({
   fileName: {
     type: String,
@@ -37,6 +38,7 @@ const fileSchema = new mongoose.Schema({
   },
 });
 
+// method to calculate success rate of imported data from file
 fileSchema.methods.calculateSuccessRate = function () {
   if (this.totalRows > 0) {
     this.successRate = ((this.importedRows / this.totalRows) * 100).toFixed(2);

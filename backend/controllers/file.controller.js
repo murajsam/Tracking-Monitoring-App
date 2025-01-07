@@ -4,6 +4,7 @@ import File from "../models/file.model.js";
 import Tracking from "../models/tracking.model.js";
 import { processExcelFile } from "../utils/excelParser.js";
 
+// upload file and import its tracking data into database
 export const uploadFile = async (req, res) => {
   try {
     const { file } = req;
@@ -15,11 +16,10 @@ export const uploadFile = async (req, res) => {
 
     const filePath = path.resolve(file.path);
     const buffer = fs.readFileSync(filePath);
-    // Parsiranje Excel fajla
+    // get final mapped tracking data and matching carrier name from Excel file (predefined fields rules mapping from .csv file)
     const { trackingData, carrier } = processExcelFile(buffer);
 
-    console.log(trackingData);
-    // Kreiranje zapisa za fajl u bazi
+    // create file object to store in database
     const fileRecord = new File({
       fileName: file.originalname,
       carrier: carrier || "Unknown",
@@ -27,13 +27,14 @@ export const uploadFile = async (req, res) => {
       status: "N/A",
     });
 
-    // Provera nosioca
+    // check if carrier is recognized or is missing
+    // if it's not recognized, save file object to database with failure reason and skip importing tracking data
     if (!fileRecord.carrier || fileRecord.carrier === "Unknown") {
       fileRecord.status = "Failed";
       fileRecord.failureReason = "Carrier is not recognized or is missing.";
       await fileRecord.save();
 
-      fs.unlinkSync(filePath); // Brisanje fajla nakon obrade
+      fs.unlinkSync(filePath); // delete uploaded file after importing tracking data
 
       return res.status(200).json({
         message: "File upload completed with failures.",
@@ -44,6 +45,7 @@ export const uploadFile = async (req, res) => {
     let importedRows = 0;
     let duplicatedRows = 0;
 
+    // fields to check for duplicates
     const fieldsToCheck = [
       "Status",
       "PO Number",
@@ -67,11 +69,14 @@ export const uploadFile = async (req, res) => {
       "Latest Checkpoint",
     ];
 
-    // Obrada redova
+    // import tracking data from file
+    // if tracking data is duplicated, skip it (duplicated rows will be counted in duplicatedRows variable)
+    // if tracking data is not duplicated, save it to database (importedRows variable will be counted)
     for (const row of trackingData) {
       try {
         const query = {};
         fieldsToCheck.forEach((field) => {
+          // only check fields for duplicates which are not empty, not null, not undefined and not 0
           if (
             row[field] !== undefined &&
             row[field] !== 0 &&
@@ -83,9 +88,10 @@ export const uploadFile = async (req, res) => {
           }
         });
 
-        // Proveri da li postoji dokument sa istim vrednostima u navedenim poljima
+        // check if tracking data is already imported
         const existingData = await Tracking.findOne(query);
 
+        // if tracking data is not imported, save it to database
         if (!existingData) {
           const trackingRecord = new Tracking({
             data: row,
@@ -102,7 +108,7 @@ export const uploadFile = async (req, res) => {
       }
     }
 
-    // Ažuriranje vrednosti u fajlu
+    // update file object with imported rows and duplicated rows and calculate success rate
     fileRecord.importedRows = importedRows;
     fileRecord.duplicatedRows = duplicatedRows;
     fileRecord.calculateSuccessRate();
@@ -115,12 +121,12 @@ export const uploadFile = async (req, res) => {
           : "Unknown error prevented importing any rows.";
     }
 
+    // save file object to database
     await fileRecord.save();
 
-    // Brisanje privremenog fajla
+    // delete uploaded file
     fs.unlinkSync(filePath);
 
-    // Priprema odgovora
     const responseMessage =
       importedRows > 0
         ? "File uploaded and processed successfully."

@@ -1,7 +1,7 @@
 import XLSX from "xlsx";
 import { convertWeight, isPotentialDate } from "./dataConverters.js";
 
-// Provider content carrier structure for DHL, Hellman & Logwin
+// carrier tracking data for DHL, Hellman & Logwin (name and fields with all names)
 const carriers = [
   {
     name: "DHL",
@@ -85,30 +85,33 @@ const carriers = [
   },
 ];
 
-// Field Mapping for Excel file. Function returns an array of objects with mapped data.
-// Array is empty if no matching carrier is found.
+// tracking data field mapping for uploaded Excel file.
+// reuturns array of mapped data and matching carrier name
+// if no matching carrier is found, returns empty array and "Unknown"
 export const processExcelFile = (buffer) => {
-  // Load the Excel workbook from the provided buffer
+  // load the Excel workbook from the provided buffer
   const workbook = XLSX.read(buffer, {
-    type: "buffer", // Load the workbook from a buffer
-    cellDates: true, // Parse dates in cells
-    sheetStubs: true,
+    type: "buffer", // load the workbook from a buffer
+    cellDates: true, // parse dates in fileds (field will be converted to Date object if possible)
+    sheetStubs: true, // create sheet stubs (empty rows and columns)
   });
 
-  // Process each sheet and return the first matching carrier's data
+  // process each sheet and return the first matching carrier's tracking data
   for (const sheetName of workbook.SheetNames) {
     const sheet = workbook.Sheets[sheetName];
     const trackingData = XLSX.utils.sheet_to_json(sheet, {
-      defval: null, // Default value for empty cells
+      defval: null, // default value for empty fields
     });
 
-    let matchingCarrierRow = -1; // Row index of the first row with matching carrier
-    let matchingCarrier = { name: "Unknown", fields: [] }; // Matching carrier name (DHL, Hellman, Logwin)
-    let mappedTrackingData = []; // Array of final mapped data
+    let matchingCarrierRow = -1; // index of the row with matching carrier
+    let matchingCarrier = { name: "Unknown", fields: [] }; // matching carrier name (DHL, Hellman, Logwin)
+    let mappedTrackingData = []; // array of final mapped tracking data to store in database
 
-    // Identify the matching carrier by comparing fields in the data
+    // identify the matching carrier by comparing each row field's tracking data from excel file with carrier fields from mapping array (DHL, Hellman, Logwin)
     for (const trackingDataItem of trackingData) {
       matchingCarrierRow++;
+
+      // filter null and undefined values from keys and values
       const trackingDataKeys = Object.keys(trackingDataItem).filter(
         (key) =>
           trackingDataItem[key] !== null && trackingDataItem[key] !== undefined
@@ -117,14 +120,14 @@ export const processExcelFile = (buffer) => {
         (value) => value !== null && value !== undefined
       );
 
-      // Find a carrier whose fields match either keys or values in the data
+      // find a carrier whose all fields match either keys or values in the excel file tracking data
       matchingCarrier = carriers.find(
         (carrier) =>
           trackingDataValues.every((value) =>
             carrier.fields.includes(
               (value === null || value === undefined ? "" : String(value))
-                .replaceAll(/\r|\n/g, " ")
-                .replaceAll("  ", " ")
+                .replaceAll(/\r|\n/g, " ") // replace line breaks with spaces
+                .replaceAll("  ", " ") // replace double spaces with single space
             )
           ) ||
           trackingDataKeys.every((key) =>
@@ -136,26 +139,35 @@ export const processExcelFile = (buffer) => {
           )
       );
 
+      // if a matching carrier is found, break the loop
       if (matchingCarrier) {
         break;
       }
     }
 
-    // If a matching carrier is found, process its data
+    // If a matching carrier is found, process its tracking data
     if (matchingCarrier) {
+      // tracking data array from excel file which will then be mapped in predefined fileds and stored in database
       const retrievedTrackingData = [];
 
-      // Extract data starting from the row after the carrier is identified
+      // extract tracking data starting from the row after the carrier is identified
       for (
         let i =
-          matchingCarrierRow + (matchingCarrier.name === "Logwin" ? 0 : 1);
+          matchingCarrierRow + (matchingCarrier.name === "Logwin" ? 0 : 1); // logwin specific offset becuase of different header row within the excel file
         i < trackingData.length;
         i++
       ) {
         const trackingDataItem = trackingData[i];
         if (!trackingDataItem) continue;
 
+        // retrieve tracking data object with mapped fields from excel file
         const retrievedTrackingDataObject = {};
+
+        // map each field from matching carrier fields array to tracking data object in format of { field: value }
+        // if value is a potential date, convert it to Date object with correct timezone for each carrier
+        // if value is not a potential date, pass type as is
+        // if value is empty (""), convert it to null
+        // if value is undefined, convert it to null
         matchingCarrier.fields.forEach((field, index) => {
           const value = Object.values(trackingDataItem)[index];
 
@@ -168,7 +180,7 @@ export const processExcelFile = (buffer) => {
                     const adjustedDate = new Date(
                       date.getTime() + offset * 60 * 1000
                     );
-                    return isNaN(adjustedDate.getTime()) ? null : adjustedDate;
+                    return isNaN(adjustedDate.getTime()) ? null : adjustedDate; // if date is invalid, return null
                   }
                   case "DHL": {
                     const date = new Date(value);
@@ -187,15 +199,15 @@ export const processExcelFile = (buffer) => {
                     return isNaN(adjustedDate.getTime()) ? null : adjustedDate;
                   }
                   default:
-                    return null; // Ako nije nijedan od definisanih slucajeva
+                    return null;
                 }
               })()
             : value === ""
-            ? null // Prazne vrednosti postavi na null
-            : value; // Sve ostalo ostavi nepromenjeno
+            ? null
+            : value;
         });
 
-        // Add the mapped data to the array
+        // add the mapped object to the tracking data array
         if (
           Object.values(retrievedTrackingDataObject).some(
             (value) =>
@@ -208,7 +220,7 @@ export const processExcelFile = (buffer) => {
         }
       }
 
-      // Maps and fills predefined fields based on the carrier
+      // form array of final mapped tracking data (predefined fields rules mapping from .csv file) to store in database
       switch (matchingCarrier.name) {
         case "DHL":
           mappedTrackingData = retrievedTrackingData.map(
@@ -233,7 +245,7 @@ export const processExcelFile = (buffer) => {
               ATA: null,
               Carrier: null,
               Packages: packages,
-              Weight: convertWeight(weight) <= 0 ? null : convertWeight(weight),
+              Weight: convertWeight(weight) <= 0 ? null : convertWeight(weight), // convert other weight types to kg (ex. lbs to kg, pounds to kg)
               Volume: null,
               "Shipper Country": null,
               Receiver: receiver,
@@ -254,7 +266,7 @@ export const processExcelFile = (buffer) => {
               "House AWB": house,
               "Shipper Name": shipper,
               "Shipper Country": shipperCountry,
-              Consignee: consignee,
+              "Consignee Name": consignee,
               "Consignee Country": consigneeCountry,
               "Flight ETD": etd,
               "Flight ETA": eta,
@@ -279,7 +291,6 @@ export const processExcelFile = (buffer) => {
               Weight: convertWeight(weight) <= 0 ? null : convertWeight(weight),
               Volume: null,
               "Shipper Country": shipperCountry,
-              Receiver: null,
               "Receiver Country": consigneeCountry,
               Carrier: matchingCarrier.name,
               "Inco Term": null,
@@ -337,6 +348,7 @@ export const processExcelFile = (buffer) => {
           break;
       }
 
+      // return final tracking data and matching carrier name
       return {
         trackingData: mappedTrackingData,
         carrier: matchingCarrier.name,
@@ -344,5 +356,6 @@ export const processExcelFile = (buffer) => {
     }
   }
 
+  // if no matching carrier is found, return empty array and "Unknown" carrier
   return { trackingData: [], carrier: "Unknown" };
 };

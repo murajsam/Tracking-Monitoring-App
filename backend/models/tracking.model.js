@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-// Custom getter/setter za datume koji handleuje nevalidne vrednosti
+// get/set date handler for ETD/ETA/ATD/ATA fields to handle invalid dates
 const dateHandler = {
   get: (value) => value,
   set: (value) => {
@@ -10,6 +10,7 @@ const dateHandler = {
   },
 };
 
+// model for tracking data from uploaded files (each data has get/set methods to handle invalid data)
 const trackingSchema = new mongoose.Schema(
   {
     data: {

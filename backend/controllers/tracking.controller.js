@@ -1,5 +1,6 @@
 import Tracking from "../models/tracking.model.js";
 
+// get all tracking data from database
 export const getTrackings = async (req, res) => {
   try {
     const trackings = await Tracking.find({});
@@ -13,6 +14,7 @@ export const getTrackings = async (req, res) => {
   }
 };
 
+// get specific tracking data by id from database
 export const getTrackingById = async (req, res) => {
   try {
     const { id } = req.params;

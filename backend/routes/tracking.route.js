@@ -6,7 +6,9 @@ import {
 
 const router = Router();
 
+// route for getting all tracking data from database (get method)
 router.get("/all", getTrackings);
+// route for getting specific tracking data by id from database (get method)
 router.get("/:id", getTrackingById);
 
 export default router;
