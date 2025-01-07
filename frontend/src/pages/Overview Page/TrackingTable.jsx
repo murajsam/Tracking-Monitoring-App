@@ -201,7 +201,7 @@ const TrackingTable = ({ trackings }) => {
                 </div>
                 <a
                   href={`/details/${tracking._id}`}
-                  target="_blank"
+                  target="_self"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium text-green-600 hover:text-green-800 rounded-md hover:bg-green-50 transition-colors duration-150"
                 >

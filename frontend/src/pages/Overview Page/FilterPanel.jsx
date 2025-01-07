@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { Globe, File, Package, Weight, Calendar } from "lucide-react";
+import { filterTrackings } from "../../utils/filterTrackingUtils";
 
 const FilterPanel = ({
   applyFilters,
@@ -9,6 +10,7 @@ const FilterPanel = ({
   trackings,
 }) => {
   const [localFilters, setLocalFilters] = useState(selectedFilters);
+  const [filteredTrackings, setFilteredTrackings] = useState(trackings);
 
   // Ikone za svaki filter
   const getIcon = (key) => {
@@ -34,10 +36,13 @@ const FilterPanel = ({
     const statuses = new Set();
     const shippers = new Set();
 
-    trackings.forEach((tracking) => {
-      if (tracking.data.Carrier) carriers.add(tracking.data.Carrier);
-      if (tracking.data.Status) statuses.add(tracking.data.Status);
-      if (tracking.data.Shipper) shippers.add(tracking.data.Shipper);
+    filteredTrackings.forEach((filteredTracking) => {
+      if (filteredTracking.data.Carrier)
+        carriers.add(filteredTracking.data.Carrier);
+      if (filteredTracking.data.Status)
+        statuses.add(filteredTracking.data.Status);
+      if (filteredTracking.data.Shipper)
+        shippers.add(filteredTracking.data.Shipper);
     });
 
     return {
@@ -55,7 +60,11 @@ const FilterPanel = ({
         "Custom range",
       ],
     };
-  }, [trackings]);
+  }, [filteredTrackings]);
+
+  useEffect(() => {
+    setFilteredTrackings(filterTrackings(trackings, localFilters));
+  }, [localFilters, trackings]); // Praćenje promena u filterima ili podacima
 
   // Promena vrednosti filtera
   const handleFilterChange = (key, value) => {
@@ -77,8 +86,8 @@ const FilterPanel = ({
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 mb-8">
-      <div className="grid grid-cols-3 gap-6">
+    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 mb-8 w-full max-w-[1200px]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {Object.entries(filterOptions).map(([key, options]) => (
           <div key={key} className="space-y-2">
             <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
@@ -102,10 +111,9 @@ const FilterPanel = ({
           </div>
         ))}
 
-        {/* Dodatak za Custom Range */}
         {localFilters.dateRange === "Custom range" && (
           <div className="col-span-1 mt-1">
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
                 <label className="text-sm font-medium text-gray-700">
                   From
@@ -130,7 +138,7 @@ const FilterPanel = ({
           </div>
         )}
       </div>
-      <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
+      <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t">
         <button
           onClick={closePanel}
           className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"

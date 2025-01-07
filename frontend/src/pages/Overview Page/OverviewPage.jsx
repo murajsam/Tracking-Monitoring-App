@@ -55,12 +55,14 @@ const OverviewPage = () => {
   };
 
   const applyFiltersAndSearch = () => {
+    setShowFilters(false);
     let result = filterTrackings(trackings, selectedFilters);
     setFilteredTrackings(result);
     setCurrentPage(1);
   };
 
   const removeFilter = (key) => {
+    setShowFilters(false);
     setSelectedFilters((prev) => {
       const updatedFilters = { ...prev };
 
@@ -78,6 +80,7 @@ const OverviewPage = () => {
   };
 
   const clearFilters = () => {
+    setShowFilters(false);
     setSelectedFilters({
       carrier: "All",
       status: "All",
@@ -97,12 +100,12 @@ const OverviewPage = () => {
   return (
     <div className="min-h-screen w-full flex flex-col">
       <Navbar />
-      <div className="bg-gray-100">
-        <h1 className="text-5xl font-bold text-gray-700 text-center mb-10">
+      <div className="bg-gray-100 px-4 sm:px-6">
+        <h1 className="text-3xl sm:text-5xl font-bold text-gray-700 text-center mb-6 sm:mb-10">
           Tracking Overview
         </h1>
         {!isLoading && (
-          <div className="flex flex-col items-center justify-between">
+          <div className="flex flex-col items-center">
             <SearchBar
               showFilters={showFilters}
               setShowFilters={setShowFilters}
@@ -129,8 +132,8 @@ const OverviewPage = () => {
         {isLoading ? (
           <LoadingSpinner />
         ) : (
-          <div className="w-full">
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 mx-10">
+          <div className="w-full px-4 sm:px-6">
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200">
               {trackings.length === 0 ? (
                 <ErrorDisplay message="No data available. Please import some data." />
               ) : filteredTrackings.length === 0 ? (

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { ChevronDown } from "lucide-react";
 
 const File = ({
   name,
@@ -99,11 +100,14 @@ const File = ({
             {/* Toggle Details */}
             <button
               onClick={() => setShowDetails(!showDetails)}
-              className="mt-4 text-sm font-bold text-gray-500 hover:text-gray-600 focus:outline-none"
+              className="mt-4 text-sm font-bold text-gray-500 hover:text-gray-600 focus:outline-none flex flex-row justify-center items-center mx-auto"
             >
-              {showDetails
-                ? "Hide Additional Info ▼"
-                : "Show Additional Info ▲"}
+              Additional Information
+              <ChevronDown
+                className={`w-5 h-5 transform transition-transform duration-200 ${
+                  showDetails ? "rotate-180" : ""
+                }`}
+              />
             </button>
 
             {/* Additional Info */}

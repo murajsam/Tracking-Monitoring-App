@@ -34,7 +34,7 @@ const DetailPage = () => {
   return (
     <div className="min-h-screen w-full flex flex-col justify-between">
       <Navbar />
-      <div className="w-full flex flex-col justify-center items-center mt-10">
+      <div className="w-full flex flex-col justify-center items-center">
         <h1 className="text-5xl font-bold text-gray-700 text-center mb-5">
           Tracking Details
         </h1>

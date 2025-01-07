@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { Upload, ArrowRight } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 flex items-center justify-between py-4 px-6 shadow-lg bg-white mb-10">
+    <nav className="sticky top-0 z-50 flex items-center justify-between py-4 px-6 shadow-lg bg-white mb-10 text-xl">
+      {/* Logo */}
       <div className="flex items-center space-x-4">
         <a href="/" className="flex items-center">
           <img
@@ -15,10 +17,11 @@ const Navbar = () => {
         </a>
       </div>
 
+      {/* Hamburger Button */}
       <div className="sm:hidden">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="text-gray-700 hover:text-black focus:outline-none"
+          className="text-gray-700 hover:text-black focus:outline-none absolute right-5 top-5"
         >
           {isOpen ? (
             <svg
@@ -54,19 +57,24 @@ const Navbar = () => {
         </button>
       </div>
 
+      {/* Menu */}
       <div
         className={`${
           isOpen ? "block" : "hidden"
-        } sm:block md:flex md:items-center space-y-4 md:space-y-0 md:space-x-6`}
+        } sm:flex flex-col sm:flex-row sm:w-auto mt-4 sm:mt-0 space-y-4 sm:space-y-0 sm:space-x-6 sm:mr-0 mr-6`}
       >
-        <a href="/" className="text-gray-700 hover:text-green-500 block">
+        <a
+          href="/"
+          className="text-gray-700 hover:text-green-500 flex items-center gap-1 justify-center"
+        >
           Upload
+          <Upload className="w-5 h-5" />
         </a>
         <a
           href="/overview"
-          className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg shadow-md block md:inline-block"
+          className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg shadow-md flex items-center gap-1 justify-center"
         >
-          Overview →
+          Overview <ArrowRight className="w-5 h-5" />
         </a>
       </div>
     </nav>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import File from "./File";
 import axios from "axios";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { ArrowRight, Import, Upload, ArrowLeft } from "lucide-react";
 
 const UploadFile = () => {
   const [step, setStep] = useState(1);
@@ -134,10 +135,10 @@ const UploadFile = () => {
 
   // Render methods
   const renderFileUploadStep = () => (
-    <div className="text-center">
+    <div className="text-center h-96">
       {files.length === 0 ? (
         <div
-          className={`flex flex-col items-center justify-center mb-6 min-h-96 border-dashed border-2 rounded-lg ${
+          className={`flex flex-col items-center justify-center mb-6 h-full border-dashed border-2 rounded-lg ${
             isDragging ? "border-green-500" : "border-gray-300"
           }`}
           onDragOver={handleDragOver}
@@ -164,7 +165,7 @@ const UploadFile = () => {
                 />
               </svg>
             </div>
-            <p className="text-green-800 font-semibold text-md mt-4">
+            <p className="text-green-800 font-semibold text-md mt-4 p-5">
               Drag & Drop files here or click to upload (.xlsx, .xls)
             </p>
           </div>
@@ -195,15 +196,17 @@ const UploadFile = () => {
         <>
           <button
             onClick={() => setStep(2)}
-            className="mt-6 bg-green-500 text-white font-bold py-3 px-16 rounded hover:bg-green-600 float-end"
+            className="mt-6 bg-green-500 text-white font-bold py-3 px-5 rounded hover:bg-green-600 float-end flex flex-row gap-2"
           >
             Next
+            <ArrowRight className="w-5 h-5" />
           </button>
           <button
             onClick={() => document.getElementById("file-upload").click()}
-            className="mt-6 mr-5 bg-green-500 text-white font-bold py-3 px-16 rounded hover:bg-green-600 float-end"
+            className="mt-6 mr-5 bg-green-500 text-white font-bold py-3 px-5 rounded hover:bg-green-600 sm:float-end float-start flex flex-row gap-2"
           >
-            Upload more?
+            Upload more
+            <Upload className="w-5 h-5" />
           </button>
           <input
             type="file"
@@ -285,9 +288,10 @@ const UploadFile = () => {
                 </div>
                 <button
                   onClick={handleValidation}
-                  className="mt-6 bg-green-500 text-white font-bold py-3 px-16 rounded hover:bg-green-600 float-end"
+                  className="mt-6 bg-green-500 text-white font-bold py-3 px-5 rounded hover:bg-green-600 float-end flex flex-row gap-2 justify-center items-center"
                 >
                   Import data
+                  <Import className="w-5 h-5" />
                 </button>
               </>
             )}
@@ -295,7 +299,7 @@ const UploadFile = () => {
         )}
 
         {step === 3 && (
-          <div>
+          <div className="flex flex-col items-between">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 min-h-96">
               {validationResults.map((file, index) => (
                 <File
@@ -313,21 +317,24 @@ const UploadFile = () => {
                 />
               ))}
             </div>
-            <button
-              onClick={() => {
-                resetUpload();
-              }}
-              className="mt-6 bg-gray-500 text-white font-bold py-3 px-10 rounded hover:bg-gray-600"
-            >
-              ← Upload more
-            </button>
-
-            <a
-              href="/overview"
-              className="mt-6 bg-green-500 text-white font-bold py-3 px-16 rounded hover:bg-green-600 float-end"
-            >
-              Overview →
-            </a>
+            <div className="flex flex-row justify-between">
+              <button
+                onClick={() => {
+                  resetUpload();
+                }}
+                className="mt-6 bg-gray-500 text-white font-bold py-3 px-5 rounded hover:bg-gray-600 flex flex-row gap-2 justify-center items-center"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                Upload more
+              </button>
+              <a
+                href="/overview"
+                className="mt-6 bg-green-500 text-white font-bold py-3 px-5 rounded hover:bg-green-600 float-end flex flex-row gap-2 justify-center items-center"
+              >
+                Overview
+                <ArrowRight className="w-5 h-5" />
+              </a>
+            </div>
           </div>
         )}
       </div>
