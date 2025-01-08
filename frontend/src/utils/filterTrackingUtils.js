@@ -1,6 +1,7 @@
+// returns filtered trackings based on filter list
 export const filterTrackings = (trackings, filters) => {
   return trackings.filter((tracking) => {
-    // Carrier filter
+    // carrier filter
     if (
       filters.carrier !== "All" &&
       tracking.data.Carrier !== filters.carrier
@@ -8,12 +9,12 @@ export const filterTrackings = (trackings, filters) => {
       return false;
     }
 
-    // Status filter
+    // status filter
     if (filters.status !== "All" && tracking.data.Status !== filters.status) {
       return false;
     }
 
-    // Shipper filter
+    // shipper filter
     if (
       filters.shipper !== "All" &&
       tracking.data.Shipper !== filters.shipper
@@ -21,7 +22,7 @@ export const filterTrackings = (trackings, filters) => {
       return false;
     }
 
-    // Weight filter
+    // weight filter
     if (filters.weight !== "All") {
       const weight = parseFloat(tracking.data.Weight);
       const [min, max] = getWeightRange(filters.weight);
@@ -30,7 +31,7 @@ export const filterTrackings = (trackings, filters) => {
       }
     }
 
-    // Date range filter
+    // date range filter
     if (filters.dateRange !== "All") {
       const { start, end } = getDateRange(
         filters.dateRange,
@@ -43,10 +44,11 @@ export const filterTrackings = (trackings, filters) => {
       }
     }
 
-    // Search logic
+    // search logic
     if (filters.search.term) {
       const searchTerm = filters.search.term.toLowerCase();
       if (filters.search.field === "All") {
+        // search in all fields
         return (
           Object.values(tracking.data).some(
             (value) =>
@@ -59,6 +61,7 @@ export const filterTrackings = (trackings, filters) => {
             tracking.fileName !== "Not Specified")
         );
       } else {
+        // search in specific field
         const fieldValue = tracking.data[filters.search.field];
         return (
           fieldValue &&
@@ -72,6 +75,7 @@ export const filterTrackings = (trackings, filters) => {
   });
 };
 
+// returns weight range based on weight filter value
 const getWeightRange = (weightFilter) => {
   switch (weightFilter) {
     case "0 - 10 kg":
@@ -87,6 +91,7 @@ const getWeightRange = (weightFilter) => {
   }
 };
 
+// returns date range based on date range filter value
 const getDateRange = (dateRangeFilter, customRange = {}) => {
   const end = new Date();
   const start = new Date();
@@ -108,18 +113,18 @@ const getDateRange = (dateRangeFilter, customRange = {}) => {
       start.setDate(end.getDate() - 365);
       break;
     case "Custom range":
-      // Koristimo customRange samo ako su datumi postavljeni
+      // customRange is used only if custom dates are set
       if (customRange.start) {
         start.setTime(new Date(customRange.start).getTime());
       } else {
-        start.setFullYear(start.getFullYear() - 100); // Efektivno nema početnog datuma
+        start.setFullYear(start.getFullYear() - 100);
       }
       if (customRange.end) {
         end.setTime(new Date(customRange.end).getTime());
       }
       break;
     default:
-      start.setFullYear(start.getFullYear() - 100); // Efektivno nema početnog datuma
+      start.setFullYear(start.getFullYear() - 100);
   }
 
   return { start, end };

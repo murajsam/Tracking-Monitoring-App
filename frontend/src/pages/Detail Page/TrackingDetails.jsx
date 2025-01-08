@@ -18,10 +18,12 @@ import {
 import InfoCard from "./InfoCard";
 import { formatDateTime } from "../../utils/formatDateTimeUtils";
 
+// component to display tracking details (file name, carrier, status, additional info, etc...)
 const TrackingDetails = ({ tracking }) => {
-  const [showAdditionalInfo, setShowAdditionalInfo] = useState(false);
-  const navigate = useNavigate();
+  const [showAdditionalInfo, setShowAdditionalInfo] = useState(false); // boolean to show additional info
+  const navigate = useNavigate(); // navigate to overview page
 
+  // method to get carrier icon based on carrier name
   const getCarrierIcon = (carrier) => {
     switch (carrier?.toLowerCase()) {
       case "hellman":
@@ -78,7 +80,7 @@ const TrackingDetails = ({ tracking }) => {
 
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <div className="p-6 space-y-6">
-          {/* Header Section */}
+          {/* header section */}
           <div className="flex justify-between items-center border-b pb-4">
             <div className="flex items-center gap-3 text-xl font-semibold text-gray-800">
               {getCarrierIcon(tracking?.data?.Carrier)}
@@ -88,7 +90,7 @@ const TrackingDetails = ({ tracking }) => {
             </span>
           </div>
 
-          {/* File Information */}
+          {/* file information */}
           <div>
             <h3 className="text-lg font-medium text-gray-800 mb-4">
               File Information
@@ -107,7 +109,7 @@ const TrackingDetails = ({ tracking }) => {
             </div>
           </div>
 
-          {/* Main Tracking Information */}
+          {/* main tracking information */}
           <div className="border-t pt-4">
             <h3 className="text-lg font-medium text-gray-800 mb-4">
               Tracking Information
@@ -150,7 +152,7 @@ const TrackingDetails = ({ tracking }) => {
             </div>
           </div>
 
-          {/* Parties Information */}
+          {/* parties information */}
           <div className="border-t pt-4">
             <h3 className="text-lg font-medium text-gray-800 mb-4">
               Parties Information
@@ -179,7 +181,7 @@ const TrackingDetails = ({ tracking }) => {
             </div>
           </div>
 
-          {/* Transport Information */}
+          {/* transport information */}
           <div className="border-t pt-4">
             <h3 className="text-lg font-medium text-gray-800 mb-4">
               Transport Information
@@ -208,7 +210,7 @@ const TrackingDetails = ({ tracking }) => {
             </div>
           </div>
 
-          {/* Important Dates */}
+          {/* important dates */}
           <div className="border-t pt-4">
             <h3 className="text-lg font-medium text-gray-800 mb-4">
               Important Dates
@@ -237,7 +239,7 @@ const TrackingDetails = ({ tracking }) => {
             </div>
           </div>
 
-          {/* Additional Info Section */}
+          {/* additional info section */}
           <div className="border-t pt-4">
             <button
               onClick={() => setShowAdditionalInfo(!showAdditionalInfo)}
@@ -257,15 +259,15 @@ const TrackingDetails = ({ tracking }) => {
               <div className="p-4 space-y-4">
                 {Object.entries(tracking.data["Additional Info"]).map(
                   ([key, value]) => {
-                    // Proveri da li je vrednost u obliku datuma "YYYY-MM-DDTHH:mm:ss.sssZ"
+                    // check if value is in ISO format: "YYYY-MM-DDTHH:mm:ss.sssZ" (if value is date in database, because all dates are that type)
                     const isIsoDate =
                       typeof value === "string" &&
                       /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(
                         value
                       );
                     const formattedValue = isIsoDate
-                      ? formatDateTime(value)
-                      : value?.toString() || "Not Specified";
+                      ? formatDateTime(value) // if value is in ISO format, format it
+                      : value?.toString() || "Not Specified"; // if value is not in ISO format, display it as a string
 
                     return (
                       <div key={key} className="flex flex-col">

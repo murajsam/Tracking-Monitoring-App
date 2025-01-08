@@ -4,21 +4,21 @@ import "react-circular-progressbar/dist/styles.css";
 import { ChevronDown } from "lucide-react";
 
 const File = ({
-  name,
-  status,
-  carrier,
-  totalRows,
-  duplicatedRows,
-  importedRows,
-  successRate,
-  onRemove,
-  showRemove,
-  error,
-  step,
+  name, // file name (with extension)
+  status, // file status (Validated, Failed, N/A)
+  carrier, // carrier name (DHL, Hellman, Logwin, Unknown)
+  totalRows, // total number of rows to import to database from the file
+  duplicatedRows, // number of duplicated rows in the file
+  importedRows, // number of rows imported to the database
+  successRate, // success rate of the import
+  onRemove, // function to remove the file from the array
+  showRemove, // boolean to show the remove button
+  error, // error message if there is an error
+  step, // current step of the upload process
 }) => {
-  const [showDetails, setShowDetails] = useState(false);
+  const [showDetails, setShowDetails] = useState(false); // boolean to show additional details (imported rows, duplicated rows)
 
-  // Define color based on status
+  // define color based on status (green for validated, red for failed and gray for N/A)
   const getStatusColor = () => {
     if (status === "Validated") return "text-green-500";
     if (status === "Failed") return "text-red-500";
@@ -27,7 +27,7 @@ const File = ({
 
   return (
     <div className="bg-gray-100 border p-4 flex flex-col items-center justify-center relative rounded-lg shadow-md">
-      {/* Remove Button */}
+      {/* remove button */}
       {showRemove && (
         <button
           onClick={onRemove}
@@ -38,7 +38,7 @@ const File = ({
         </button>
       )}
 
-      {/* Excel Icon */}
+      {/* excel icon */}
       <div className="flex flex-col items-center mb-4">
         <img
           src="https://www.freeiconspng.com/uploads/excel-icon-12.png"
@@ -47,11 +47,11 @@ const File = ({
         />
       </div>
 
-      {/* File Info */}
+      {/* file info */}
       <div className="text-center w-full">
         <p className="text-gray-700 font-semibold text-lg truncate">{name}</p>
 
-        {/* Carrier */}
+        {/* carrier */}
         {carrier && (
           <p className="text-md mt-1 text-gray-600">
             Carrier:
@@ -59,7 +59,7 @@ const File = ({
           </p>
         )}
 
-        {/* Status */}
+        {/* status */}
         <p className="text-md mt-1 text-gray-500">
           Status:
           <span className={`font-semibold ml-1 ${getStatusColor()}`}>
@@ -67,13 +67,13 @@ const File = ({
           </span>
         </p>
 
-        {/* Additional Information for steps 2 and above */}
+        {/* information for steps 2 and above */}
         {step >= 3 && (
           <>
-            {/* Error Message if exists */}
+            {/* error message if exists */}
             {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
-            {/* Success Rate Circle */}
+            {/* success rate circle */}
             <div className="flex flex-col items-center justify-center gap-2">
               <p className="text-lg text-gray-600">Success Rate</p>
               <div className="w-24 h-24">
@@ -97,7 +97,7 @@ const File = ({
               </div>
             </div>
 
-            {/* Toggle Details */}
+            {/* toggle to show/hide additional details */}
             <button
               onClick={() => setShowDetails(!showDetails)}
               className="mt-4 text-sm font-bold text-gray-500 hover:text-gray-600 focus:outline-none flex flex-row justify-center items-center mx-auto"
@@ -110,10 +110,10 @@ const File = ({
               />
             </button>
 
-            {/* Additional Info */}
+            {/* additional details */}
             {showDetails && totalRows !== undefined && (
               <div className="mt-4 space-y-2">
-                {/* Imported Rows */}
+                {/* imported rows */}
                 <div>
                   <p className="text-sm text-gray-600">Imported Rows</p>
                   <div className="bg-gray-600 rounded-full h-3 w-full mt-1">
@@ -132,7 +132,7 @@ const File = ({
                   </p>
                 </div>
 
-                {/* Duplicated Rows */}
+                {/* duplicated rows */}
                 <div>
                   <p className="text-sm text-gray-600">Duplicated Rows</p>
                   <div className="bg-gray-600 rounded-full h-3 w-full mt-1">

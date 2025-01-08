@@ -5,16 +5,16 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { ArrowRight, Import, Upload, ArrowLeft } from "lucide-react";
 
 const UploadFile = () => {
-  const [step, setStep] = useState(1);
-  const [files, setFiles] = useState([]);
-  const [validationResults, setValidationResults] = useState([]);
-  const [isDragging, setIsDragging] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [currentFileIndex, setCurrentFileIndex] = useState(0);
+  const [step, setStep] = useState(1); // 3 steps, 1: File Upload, 2: Validation, 3: Import
+  const [files, setFiles] = useState([]); // array of uploaded excel files
+  const [validationResults, setValidationResults] = useState([]); // array of validated excel files
+  const [isDragging, setIsDragging] = useState(false); // boolean to track if the user is dragging files
+  const [errorMessage, setErrorMessage] = useState(""); // error message to display if there is an error
+  const [isLoading, setIsLoading] = useState(false); // boolean to track if the import is in progress (loading spinner)
+  const [progress, setProgress] = useState(0); // progress percentage of the import
+  const [currentFileIndex, setCurrentFileIndex] = useState(0); // current file index to pass to the loading spinner
 
-  // File selection and validation helpers
+  // file selection and validation helpers
   const validateFiles = (selectedFiles) => {
     const validFiles = selectedFiles.filter((file) =>
       ["xls", "xlsx"].includes(file.name.split(".").pop().toLowerCase())
@@ -38,26 +38,26 @@ const UploadFile = () => {
     }));
   };
 
-  // File input handlers
+  // method to add more files to the files array
   const handleFileChange = (event) => {
     const selectedFiles = Array.from(event.target.files);
     const newFiles = validateFiles(selectedFiles);
     setFiles((prevFiles) => [...prevFiles, ...newFiles]);
   };
 
+  // method to remove a file from the files array
   const handleRemoveFile = (index) => {
     setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
+  // methods to handle file drag and drop
   const handleDragOver = (event) => {
     event.preventDefault();
     setIsDragging(true);
   };
-
   const handleDragLeave = () => {
     setIsDragging(false);
   };
-
   const handleDrop = (event) => {
     event.preventDefault();
     setIsDragging(false);
@@ -66,6 +66,7 @@ const UploadFile = () => {
     setFiles((prevFiles) => [...prevFiles, ...newFiles]);
   };
 
+  // validation method to validate the uploaded files
   const handleValidation = async () => {
     setIsLoading(true);
     setProgress(0);
@@ -81,7 +82,7 @@ const UploadFile = () => {
 
         try {
           const response = await axios.post(
-            "http://localhost:5000/api/files/upload", // Adjust your backend URL
+            "http://localhost:5000/api/files/upload",
             formData,
             {
               headers: {
@@ -97,7 +98,7 @@ const UploadFile = () => {
               ...fileData,
               status: fileData.importedRows > 0 ? "Validated" : "Failed",
               carrier: fileData.carrier || "Unknown",
-              error: fileData.failureReason, // Added failure reason
+              error: fileData.failureReason,
             });
           }
         } catch (error) {
@@ -125,7 +126,7 @@ const UploadFile = () => {
     }
   };
 
-  // Reset method
+  // reset method to reset the upload process
   const resetUpload = () => {
     setStep(1);
     setFiles([]);
@@ -133,7 +134,7 @@ const UploadFile = () => {
     setErrorMessage("");
   };
 
-  // Render methods
+  // method for showing the file upload step
   const renderFileUploadStep = () => (
     <div className="text-center h-96">
       {files.length === 0 ? (
@@ -231,7 +232,7 @@ const UploadFile = () => {
           {["Upload Files", "Validate Files & Import Data"][step - 1]}
         </h2>
 
-        {/* Progress Indicator */}
+        {/* progress indicator */}
         <div className="flex items-center justify-between mb-16">
           {[1, 2, 3].map((s) => (
             <React.Fragment key={s}>
@@ -255,14 +256,14 @@ const UploadFile = () => {
           ))}
         </div>
 
-        {/* Error Message */}
+        {/* error message */}
         {errorMessage && (
           <div className="bg-red-100 text-red-700 font-bold p-3 rounded mb-4 text-center">
             {errorMessage}
           </div>
         )}
 
-        {/* Render different steps */}
+        {/* render different steps */}
         {step === 1 && renderFileUploadStep()}
 
         {step === 2 && (

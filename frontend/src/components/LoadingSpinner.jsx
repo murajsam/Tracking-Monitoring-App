@@ -1,5 +1,8 @@
 import React from "react";
 
+// progress: percentage of file processing
+// currentFile: current file being processed
+// totalFiles: number of total files being processed
 const LoadingSpinner = ({ progress, currentFile, totalFiles }) => {
   return (
     <div className="flex flex-col items-center justify-center">

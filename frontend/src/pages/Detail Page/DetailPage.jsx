@@ -7,14 +7,16 @@ import axios from "axios";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
 const DetailPage = () => {
-  const { id } = useParams(); // Dohvata :id iz URL-a
-  const [tracking, setTracking] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { id } = useParams(); // get id of the tracking from URL
+  const [tracking, setTracking] = useState(null); // tracking object
+  const [isLoading, setIsLoading] = useState(true); // boolean to track if the tracking is loading
 
+  // useEffect to fetch tracking data on page load
   useEffect(() => {
     fetchTracking();
   }, []);
 
+  // method to fetch tracking data from api (id is passed as a parameter)
   const fetchTracking = async () => {
     setIsLoading(true);
     try {

@@ -6,7 +6,7 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 z-50 flex items-center justify-between py-4 px-6 shadow-lg bg-white mb-10 text-xl">
-      {/* Logo */}
+      {/* logo */}
       <div className="flex items-center space-x-4">
         <a href="/" className="flex items-center">
           <img
@@ -17,7 +17,7 @@ const Navbar = () => {
         </a>
       </div>
 
-      {/* Hamburger Button */}
+      {/* hamburger button */}
       <div className="sm:hidden">
         <button
           onClick={() => setIsOpen(!isOpen)}
@@ -57,7 +57,7 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Menu */}
+      {/* menu */}
       <div
         className={`${
           isOpen ? "block" : "hidden"

@@ -1,20 +1,21 @@
+// formats date in format "1st January, 2005 13:00"
 export const formatDateTime = (isoDate) => {
-  // Parsiraj ISO datum
+  // convert ISO date string to Date object
   const dateObj = new Date(isoDate);
 
-  // Proveri da li je datum podrazumevani "1st January, 1970 00:00"
+  // check if date is valid
   if (dateObj.getTime() === 0) {
     return null;
   }
 
-  // Proveri da li je vreme "00:00:00.000Z"
+  // get date components from Date object (00:00:00.000Z)
   const hours = dateObj.getUTCHours();
   const minutes = dateObj.getUTCMinutes();
   const seconds = Math.round(
     dateObj.getUTCSeconds() + dateObj.getUTCMilliseconds() / 1000
   );
 
-  // Formatiraj datum u traženi oblik
+  // format date components
   const day = dateObj.getUTCDate();
   const month = dateObj.toLocaleString("en-US", {
     month: "long",
@@ -22,7 +23,7 @@ export const formatDateTime = (isoDate) => {
   });
   const year = dateObj.getUTCFullYear();
 
-  // Dodaj sufiks za dan (1st, 2nd, 3rd, itd.)
+  // add suffix to day of the month (st, nd, rd, th)
   const daySuffix = (day) => {
     const j = day % 10,
       k = day % 100;
@@ -34,11 +35,11 @@ export const formatDateTime = (isoDate) => {
 
   const formattedDay = `${day}${daySuffix(day)}`;
 
-  // Formatiraj vreme
+  // format time components
   const formattedTime = `${String(hours).padStart(2, "0")}:${String(
     minutes
   ).padStart(2, "0")}`;
 
-  // Sastavi ceo string
+  // return formatted date string
   return `${formattedDay} ${month}, ${year} ${formattedTime}`;
 };
