@@ -22,7 +22,7 @@ const TrackingTable = ({
         return (
           <div className="flex items-center gap-2">
             <img
-              src="https://seeklogo.com/images/H/hellmann-worldwide-logistics-logo-444566F887-seeklogo.com.png"
+              src="/images/hellman.png"
               alt="Hellman Logo"
               className="w-6 h-6"
             />
@@ -32,11 +32,7 @@ const TrackingTable = ({
       case "dhl":
         return (
           <div className="flex items-center gap-2">
-            <img
-              src="https://i.pinimg.com/564x/7f/4d/56/7f4d56aa755be575226bc8505591393a.jpg"
-              alt="DHL Logo"
-              className="w-6 h-6"
-            />
+            <img src="/images/dhl.png" alt="DHL Logo" className="w-6 h-6" />
             <span>DHL</span>
           </div>
         );
@@ -44,7 +40,7 @@ const TrackingTable = ({
         return (
           <div className="flex items-center gap-2">
             <img
-              src="https://cdn.zonebourse.com/static/instruments-logo-442006"
+              src="/images/logwin.png"
               alt="Logwin Logo"
               className="w-6 h-6"
             />

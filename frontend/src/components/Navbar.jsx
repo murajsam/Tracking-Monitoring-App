@@ -9,11 +9,7 @@ const Navbar = () => {
       {/* logo */}
       <div className="flex items-center space-x-4">
         <a href="/" className="flex items-center">
-          <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzcu7iYfNs3hZT6fli_rJNGeoJSh0EzcMMrw&s"
-            alt="Avnet Logo"
-            className="h-8 w-auto"
-          />
+          <img src="/images/logo.png" alt="Avnet Logo" className="h-8 w-auto" />
         </a>
       </div>
 

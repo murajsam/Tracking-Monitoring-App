@@ -1,11 +1,12 @@
 # Tracking Monitoring App
 
-This is a web application that allows users to upload tracking data and view it in a user-friendly interface. The application is built using MERN stack (MongoDB, Express.js, React.js, and Node.js) and uses the `xlsx` and `node-xlsx` libraries to read from Excel files. Database stores tracking data from 3 different carriers: DHL, Hellman, and Logwin. Tracking data is stored in predefined format by performing specific mapping rules for each carrier. Mapping rules can be found in `mapping.csv` file.
+This is a web application that allows users to upload tracking data from excel files (examples can be found in `excel examples` folder) and view it in a user-friendly interface. The application is built using MERN stack (MongoDB, Express.js, React.js, and Node.js) and uses the `xlsx` and `node-xlsx` libraries to read from Excel files. Database stores tracking data from 3 different carriers: DHL, Hellman, and Logwin. Tracking data is stored in predefined format by performing specific mapping rules for each carrier. Mapping rules can be found in `mapping.csv` file.
 
 ## Features
 
 - Upload tracking data from Excel files (.xlsx, .xls)
-- Validate tracking data and import it into the database (DHL, Hellman, Logwin)
+- Validate tracking data and import it into MongoDB Atlas cloud database (DHL, Hellman, Logwin)
+- Upload history of Excel files in MongoDB Atlas cloud database
 - Error handling for failed validation
 - View tracking data in a user-friendly interface
 - Filter tracking data based on carrier, status, shipper, weight, date range, and search (filters are dynamic and change as more filters are selected based on the data)
@@ -23,7 +24,7 @@ To map tracking data for carriers (`DHL`, `Hellman`, `Logwin`) based on predefin
 2. **Converting Excel Files to JSON**:
 
    - The `xlsx` library is used to read the uploaded Excel file. Each sheet in the file is processed, converting the data into a JSON object.
-   - This JSON object represents the rows of the Excel file as an array of objects, where each object corresponds to a row, and the keys represent the column headers.
+   - This JSON object represents the rows of the Excel file as an array of objects, where each object value corresponds to a row value, and the keys represent the column headers of the Excel file.
 
 3. **Carrier Matching**:
 
