@@ -52,11 +52,14 @@ To map tracking data for carriers (`DHL`, `Hellman`, `Logwin`) based on predefin
 
 The application has three main pages:
 
-1. Upload Page / Home Page: This page allows users to upload Excel files containing tracking data. There are three steps in the upload process: File Upload, Validation, and Import. The user can see the progress of each step. On the first step, the user can select multiple files at once or drag and drop files into the page and can also delete or add more files. On the second step, the user can no longer add or delete files. Lastly, on the third step, the files are being validated and tracking data is being imported into the database. Once the import is complete, the user can see the results of the imported files (each file shows the indentified carrier, number of imported rows, duplicated rows, and success rate).
+1. **Upload Page / Home Page**:
+   This page allows users to upload Excel files containing tracking data. There are three steps in the upload process: File Upload, Validation, and Import. The user can see the progress of each step. On the first step, the user can select multiple files at once or drag and drop files into the page and can also delete or add more files. On the second step, the user can no longer add or delete files. Lastly, on the third step, the files are being validated and tracking data is being imported into the database. Once the import is complete, the user can see the results of the imported files (each file shows the indentified carrier, number of imported rows, duplicated rows, and success rate).
 
-2. Overview Page: This page displays a table of all imported tracking data from files. The user can filter the data based on carrier, status, shipper, weight, date range, and search. The table also provides links to the Detail Page for each tracking.
+2. **Overview Page**:
+   This page displays a table of all imported tracking data from files. The user can filter the data based on carrier, status, shipper, weight, date range, and search. The table also provides links to the Detail Page for each tracking.
 
-3. Detail Page: This page displays detailed information for a selected tracking. The user can see the file name, carrier, status, and additional information. The user can also see the tracking data in a table format.
+3. **Detail Page**:
+   This page displays detailed information for a selected tracking. The user can see the file name, carrier, status, and additional information. The user can also see the tracking data in a table format.
 
 ## Backend API
 
