@@ -8,9 +8,45 @@ This is a web application that allows users to upload tracking data and view it 
 - Validate tracking data and import it into the database (DHL, Hellman, Logwin)
 - Error handling for failed validation
 - View tracking data in a user-friendly interface
-- Filter tracking data based on carrier, status, shipper, weight, date range, and search
+- Filter tracking data based on carrier, status, shipper, weight, date range, and search (filters are dynamic and change as more filters are selected based on the data)
 - Display detailed information for each tracking
 - Mobile view support (responsive design)
+
+## Mapping Rules Solution
+
+To map tracking data for carriers (`DHL`, `Hellman`, `Logwin`) based on predefined rules from `mapping.csv` file, I used a modular approach. The solution consists of the following steps:
+
+1. **Carrier Definitions**:
+
+   - An array of carriers is defined, where each carrier (`DHL`, `Hellman`, `Logwin`) has a name and an array of specific field names. These field names represent the expected structure of data in the Excel files.
+
+2. **Converting Excel Files to JSON**:
+
+   - The `xlsx` library is used to read the uploaded Excel file. Each sheet in the file is processed, converting the data into a JSON object.
+   - This JSON object represents the rows of the Excel file as an array of objects, where each object corresponds to a row, and the keys represent the column headers.
+
+3. **Carrier Matching**:
+
+   - The application iterates through the JSON objects (rows) from excel file to determine if the data matches one of the carriers.
+   - A match is identified when all field names from the carrier definition align with the key or value pairs in the JSON objects.
+   - Each sheet in the Excel file is checked, and the process stops when the first matching carrier is found.
+
+4. **Field Mapping**:
+
+   - Once a matching carrier is identified, a new array of objects is created. Each object contains key-value pairs where:
+     - **Key**: Field name from the carrier definition.
+     - **Value**: The corresponding value from the Excel file for that field.
+   - Special handling is applied for date fields and other data transformations, ensuring the data is correctly formatted.
+
+5. **Applying Mapping Rules**:
+
+   - Then array is processed again using predefined mapping rules from the `mapping.csv` file.
+   - A `switch` statement is used to handle mapping rules and specific transformations for each carrier. For example:
+     - Adjustments for date formats and time zones.
+     - Weight conversions or other carrier-specific field mappings.
+
+6. **Final Output**:
+   - The final mapped data is returned along with the identified carrier’s name. This data is then passed to the backend for storage in the database.
 
 ## Pages
 
