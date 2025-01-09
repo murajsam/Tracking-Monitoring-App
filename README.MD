@@ -14,7 +14,7 @@ This is a web application that allows users to upload tracking data and view it 
 
 ## Mapping Rules Solution
 
-To map tracking data for carriers (`DHL`, `Hellman`, `Logwin`) based on predefined rules from `mapping.csv` file, I used a modular approach. The solution consists of the following steps:
+To map tracking data for carriers (`DHL`, `Hellman`, `Logwin`) based on predefined rules from `mapping.csv` file, step-by-step approach was used:
 
 1. **Carrier Definitions**:
 

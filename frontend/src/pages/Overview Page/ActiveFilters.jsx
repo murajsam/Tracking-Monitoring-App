@@ -1,23 +1,28 @@
 import React from "react";
 import { X } from "lucide-react";
 
-const ActiveFilters = ({ selectedFilters, clearFilters, removeFilter }) => {
+const ActiveFilters = ({
+  selectedFilters, // object of selected filters (carrier, status, shipper, weight, dateRange, customDateRange)
+  clearFilters, // function to clear all filters
+  removeFilter, // function to remove a specific filter
+}) => {
   return (
     <div className="flex gap-2 flex-wrap mb-4">
+      {/* display active filters based on selectedFilters */}
       {Object.entries(selectedFilters)
         .filter(([key, value]) => {
           if (key === "customDateRange") {
-            // Prikazujemo samo ako je izabran "Custom range" i barem jedan datum nije prazan
+            // display only if custom range is selected and at least one date is not empty
             return (
               selectedFilters.dateRange === "Custom range" &&
               (value.start || value.end)
             );
           }
           if (key === "search") {
-            return value.term !== ""; // Prikazujemo ako postoji pretraženi termin
+            return value.term !== ""; // display if there is a search term
           }
           if (key === "dateRange") {
-            // Ne prikazujemo "dateRange" ako je "Custom range" i oba datuma prazna
+            // do not display dateRange if custom range is selected and both dates are empty
             return (
               value !== "All" &&
               !(
@@ -27,7 +32,7 @@ const ActiveFilters = ({ selectedFilters, clearFilters, removeFilter }) => {
               )
             );
           }
-          return value !== "All"; // Prikazujemo sve ostale aktivne filtere
+          return value !== "All"; // display all other active filters
         })
         .map(([key, value]) => {
           if (key === "customDateRange") {
@@ -78,16 +83,18 @@ const ActiveFilters = ({ selectedFilters, clearFilters, removeFilter }) => {
             </span>
           );
         })}
+
+      {/* display clear all filters button if there are active filters */}
       {Object.entries(selectedFilters).some(([key, value]) => {
         if (key === "customDateRange") {
-          // Proveri ako su oba datuma prazna
+          // check if both dates are empty
           return value?.start || value?.end;
         }
         if (key === "search") {
-          return value.term !== ""; // Proveri ako postoji pretraženi termin
+          return value.term !== ""; // check if there is a search term
         }
         if (key === "dateRange") {
-          // Ne prikazujemo "dateRange" ako je "Custom range" i oba datuma prazna
+          // do not display dateRange if custom range is selected and both dates are empty
           return (
             value !== "All" &&
             !(
@@ -97,7 +104,7 @@ const ActiveFilters = ({ selectedFilters, clearFilters, removeFilter }) => {
             )
           );
         }
-        return value !== "All"; // Standardna provera za ostale filtere
+        return value !== "All"; // display all other active filters
       }) && (
         <button
           onClick={clearFilters}

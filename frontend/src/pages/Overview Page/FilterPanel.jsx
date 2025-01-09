@@ -4,15 +4,15 @@ import { Globe, File, Package, Weight, Calendar } from "lucide-react";
 import { filterTrackings } from "../../utils/filterTrackingUtils";
 
 const FilterPanel = ({
-  applyFilters,
-  closePanel,
-  selectedFilters,
-  trackings,
+  applyFilters, // function to set selectedFilters
+  closePanel, // function to close the panel
+  selectedFilters, // object of selected filters (carrier, status, shipper, weight, dateRange, customDateRange)
+  trackings, // array of tracking data
 }) => {
-  const [localFilters, setLocalFilters] = useState(selectedFilters);
-  const [filteredTrackings, setFilteredTrackings] = useState(trackings);
+  const [localFilters, setLocalFilters] = useState(selectedFilters); // local filters to dynamically update selectedFilters
+  const [filteredTrackings, setFilteredTrackings] = useState(trackings); // filtered trackings based on localFilters which will later be displayed in the table if the panel is closed
 
-  // Ikone za svaki filter
+  // icon for each filter
   const getIcon = (key) => {
     switch (key) {
       case "carrier":
@@ -30,7 +30,7 @@ const FilterPanel = ({
     }
   };
 
-  // Dinamičko kreiranje opcija filtera
+  // dynamic creation of filter options
   const filterOptions = useMemo(() => {
     const carriers = new Set();
     const statuses = new Set();
@@ -38,19 +38,20 @@ const FilterPanel = ({
 
     filteredTrackings.forEach((filteredTracking) => {
       if (filteredTracking.data.Carrier)
-        carriers.add(filteredTracking.data.Carrier);
+        carriers.add(filteredTracking.data.Carrier); // adds all carrier distinct values to the set
       if (filteredTracking.data.Status)
-        statuses.add(filteredTracking.data.Status);
+        statuses.add(filteredTracking.data.Status); // adds all status distinct values to the set
       if (filteredTracking.data.Shipper)
-        shippers.add(filteredTracking.data.Shipper);
+        shippers.add(filteredTracking.data.Shipper); // adds all shipper distinct values to the set
     });
 
     return {
-      carrier: ["All", ...Array.from(carriers).sort()],
-      status: ["All", ...Array.from(statuses).sort()],
-      shipper: ["All", ...Array.from(shippers).sort()],
-      weight: ["All", "0 - 10 kg", "10 - 50 kg", "50 - 100 kg", "100+ kg"],
+      carrier: ["All", ...Array.from(carriers).sort()], // array of carrier filter distinct values sorted alphabetically
+      status: ["All", ...Array.from(statuses).sort()], // array of status filter distinct values sorted alphabetically
+      shipper: ["All", ...Array.from(shippers).sort()], // array of shipper filter distinct values sorted alphabetically
+      weight: ["All", "0 - 10 kg", "10 - 50 kg", "50 - 100 kg", "100+ kg"], // array of weight filter range values
       dateRange: [
+        // array of date range filter values
         "All",
         "Last 7 days",
         "Last 30 days",
@@ -62,11 +63,12 @@ const FilterPanel = ({
     };
   }, [filteredTrackings]);
 
+  // apply filters and update filteredTrackings when localFilters or trackings change
   useEffect(() => {
     setFilteredTrackings(filterTrackings(trackings, localFilters));
-  }, [localFilters, trackings]); // Praćenje promena u filterima ili podacima
+  }, [localFilters, trackings]);
 
-  // Promena vrednosti filtera
+  // update localFilters with the selected filter value based on the key and value
   const handleFilterChange = (key, value) => {
     setLocalFilters((prev) => ({
       ...prev,
@@ -74,7 +76,7 @@ const FilterPanel = ({
     }));
   };
 
-  // Promena datuma za prilagođeni raspon
+  // update localFilters with the selected custom date range value based on the key and value
   const handleDateChange = (key, value) => {
     setLocalFilters((prev) => ({
       ...prev,
@@ -88,6 +90,7 @@ const FilterPanel = ({
   return (
     <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 mb-8 w-full max-w-[1200px]">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* display filter options for each filter */}
         {Object.entries(filterOptions).map(([key, options]) => (
           <div key={key} className="space-y-2">
             <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
@@ -111,6 +114,7 @@ const FilterPanel = ({
           </div>
         ))}
 
+        {/* display custom date range input fields if dateRange is set to custom range */}
         {localFilters.dateRange === "Custom range" && (
           <div className="col-span-1 mt-1">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -138,6 +142,8 @@ const FilterPanel = ({
           </div>
         )}
       </div>
+
+      {/* display buttons to close the panel and apply the selected filters */}
       <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t">
         <button
           onClick={closePanel}

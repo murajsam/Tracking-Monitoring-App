@@ -2,13 +2,14 @@ import React from "react";
 import { Search, Filter } from "lucide-react";
 
 const SearchBar = ({
-  showFilters,
-  setShowFilters,
-  selectedFilters,
-  setSelectedFilters,
+  showFilters, // boolean to show/hide advanced filters
+  setShowFilters, // function to set showFilters to true/false
+  selectedFilters, // object of selected filters (carrier, status, shipper, weight, dateRange, customDateRange)
+  setSelectedFilters, // function to update selectedFilters
 }) => {
   return (
     <div className="flex flex-col gap-4 mb-8 px-4">
+      {/* options to search in different fields (search in all fields, search in carrier, search in PO number, search in shipper, search in house AWB) */}
       <div className="flex flex-wrap gap-2 text-sm text-gray-600">
         <span>Search in:</span>
         <label className="flex items-center gap-1">
@@ -92,6 +93,8 @@ const SearchBar = ({
           House AWB
         </label>
       </div>
+
+      {/* search input and filter panel toggle button */}
       <div className="relative flex flex-col sm:flex-row gap-4">
         <div className="relative w-full sm:w-auto">
           <input

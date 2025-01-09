@@ -2,15 +2,16 @@ import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const Pagination = ({
-  currentPage,
-  totalPages,
-  setCurrentPage,
-  startIndex,
-  endIndex,
-  totalResults,
+  currentPage, // current page number
+  totalPages, // total number of pages
+  setCurrentPage, // function to update current page number
+  startIndex, // index of the first tracking in the current page
+  endIndex, // index of the last tracking in the current page
+  totalResults, // total number of filtered trackings
 }) => {
-  const maxVisiblePages = 5;
+  const maxVisiblePages = 5; // maximum number of visible pages for pagination
 
+  // calculate the page numbers to display in the pagination
   const getPageNumbers = () => {
     const pages = [];
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
@@ -26,6 +27,7 @@ const Pagination = ({
     );
   };
 
+  // function to handle click on a page number (navigate to the page)
   const handlePageClick = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);

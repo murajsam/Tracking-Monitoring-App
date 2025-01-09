@@ -12,7 +12,10 @@ import {
 } from "lucide-react";
 import { formatDateTime } from "../../utils/formatDateTimeUtils";
 
-const TrackingTable = ({ trackings }) => {
+const TrackingTable = ({
+  trackings, // array of tracking data
+}) => {
+  // function to get the carrier icon based on the carrier name
   const getCarrierIcon = (carrier) => {
     switch (carrier?.toLowerCase()) {
       case "hellman":
@@ -59,6 +62,7 @@ const TrackingTable = ({ trackings }) => {
 
   return (
     <>
+      {/* display the table with tracking data on desktop devices */}
       <div className="hidden 2xl:block overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50">
@@ -188,6 +192,7 @@ const TrackingTable = ({ trackings }) => {
         </table>
       </div>
 
+      {/* display the table with tracking data on mobile devices */}
       <div className="2xl:hidden space-y-4 p-5">
         {trackings.map((tracking) => (
           <div
